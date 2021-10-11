@@ -1,0 +1,9 @@
+name: smp-utils
+version: ${project.version}
+main: me.zeddit.smputils.SmpUtils
+api-version: 1.17
+commands:
+  tp:
+    description: Teleports you to another player
+  warp:
+    description: Warps!
