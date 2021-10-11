@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundSource
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Sound
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -28,6 +29,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent
 import org.bukkit.event.inventory.InventoryPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
@@ -51,12 +53,14 @@ class WasteSlotCommand : CommandExecutor, Listener {
             return if (optedOut.contains(it.uniqueId)) {
                 if (enable(it)) {
                     it.sendMessage("Turned the waste slot on!".toSuccess())
+                    optedOut.remove(it.uniqueId)
                     true
                 } else {
                     false
                 }
             } else {
                 disable(it)
+                optedOut.add(it.uniqueId)
                 it.sendMessage("Turned the waste slot off!".toSuccess())
                 true
             }
@@ -70,23 +74,23 @@ class WasteSlotCommand : CommandExecutor, Listener {
         e.clickedInventory?.let {
             if (it.getItem(e.slot)?.itemMeta?.persistentDataContainer?.has(key, PersistentDataType.BYTE) == true) {
                 e.isCancelled = true
-                e.whoClicked.setItemOnCursor(null)
+                e.whoClicked.setItemOnCursor(e.cursor?.let let2@{ item ->
+                    if (e.isRightClick) {
+                        if (item.amount-1 == 0) {
+                            return@let2 null
+                        } else {
+                            item.amount--
+                            return@let2 item
+                        }
+                    }
+                    return@let2 null
+                })
                 val loc = e.whoClicked.location
-                Bukkit.getPlayer(e.whoClicked.uniqueId)?.let { p->
-                    (p as CraftPlayer).handle.connection.send(ClientboundSoundPacket(
-                        SoundEvent(ResourceLocation("minecraft:block.lava.extinguish")),
-                        SoundSource.BLOCKS, loc.x, loc.y, loc.z, 100f, 100f))
-                }
+                Bukkit.getPlayer(e.whoClicked.uniqueId)?.playSound(loc, Sound.BLOCK_LAVA_EXTINGUISH, 10f, 1f)
             }
         }
     }
 
-    @EventHandler
-    fun onSwitch(e: InventoryClickEvent) {
-        if (e.action == InventoryAction.PICKUP_ALL) {
-            println("aha")
-        }
-    }
 
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
@@ -103,6 +107,7 @@ class WasteSlotCommand : CommandExecutor, Listener {
 
     private fun enable(p: Player) : Boolean {
         val inv = p.inventory
+        clean(inv)
         return if (inv.getItem(slot) == null) {
             inv.setItem(slot, stack)
             true
@@ -113,16 +118,19 @@ class WasteSlotCommand : CommandExecutor, Listener {
     }
 
     private fun disable(p:Player) {
-        val inv = p.inventory
-        inv.forEachIndexed { i, itemStack ->
-            if (itemStack== null) return
+        clean(p.inventory)
+        optedOut.add(p.uniqueId)
+    }
+
+    private fun clean(inv: Inventory) {
+        inv.forEachIndexed pogs@{ i, itemStack ->
+            if (itemStack== null) return@pogs
             itemStack.itemMeta?.let {
                 if (it.persistentDataContainer.has(key, PersistentDataType.BYTE)) {
                     inv.setItem(i, null)
                 }
             }
         }
-        optedOut.add(p.uniqueId)
     }
 
 }
