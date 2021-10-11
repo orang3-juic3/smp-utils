@@ -7,6 +7,8 @@ import java.lang.StringBuilder
 import kotlin.math.ceil
 import kotlin.math.floor
 
+val playerOnlyRes = "You need to be a player in order to execute this command!".toError()
+
 fun String.toError() : Component = Component.text(this, NamedTextColor.RED)
 fun String.toSuccess() : Component = Component.text(this, NamedTextColor.GREEN)
 fun String.toComponent(color: NamedTextColor = NamedTextColor.WHITE) : Component = Component.text(this, color)

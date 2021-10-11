@@ -3,6 +3,7 @@ package me.zeddit.smputils
 import me.zeddit.smputils.command.CoordsCommand
 import me.zeddit.smputils.command.TpCommand
 import me.zeddit.smputils.command.WarpCommand
+import me.zeddit.smputils.command.WasteSlotCommand
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -34,6 +35,11 @@ class SmpUtils : JavaPlugin() {
             this.setExecutor(executor)
             this.tabCompleter = executor
             toClose.add(executor)
+        }
+        val wasteSlotCommand = WasteSlotCommand()
+        server.pluginManager.registerEvents(wasteSlotCommand, this)
+        getCommand("waste")!!.apply {
+            this.setExecutor(wasteSlotCommand)
         }
     }
 

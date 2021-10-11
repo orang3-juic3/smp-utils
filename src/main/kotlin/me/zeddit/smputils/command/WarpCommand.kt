@@ -1,6 +1,7 @@
 package me.zeddit.smputils.command
 
 import me.zeddit.smputils.SmpUtils
+import me.zeddit.smputils.playerOnlyRes
 import me.zeddit.smputils.toError
 import me.zeddit.smputils.toSuccess
 import net.kyori.adventure.text.Component
@@ -77,7 +78,7 @@ class WarpCommand: CommandExecutor, TabCompleter, AutoCloseable {
                 return true
             }
             sender !is Player -> {
-                sender.sendMessage("You need to be a player in order to execute this command!".toError())
+                sender.sendMessage(playerOnlyRes)
                 return true
             }
 

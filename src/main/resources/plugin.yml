@@ -9,3 +9,7 @@ commands:
     description: Warps!
   coord:
     description: Format coords.
+    aliases:
+      - coordc
+  waste:
+    description: Waste slot command toggle

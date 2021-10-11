@@ -1,5 +1,6 @@
 package me.zeddit.smputils.command
 
+import me.zeddit.smputils.playerOnlyRes
 import me.zeddit.smputils.toError
 import me.zeddit.smputils.toSuccess
 import net.kyori.adventure.text.Component
@@ -16,7 +17,7 @@ import org.bukkit.entity.Vex
 class TpCommand : CommandExecutor, TabCompleter {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("Only players can execute this command!".toError())
+            sender.sendMessage(playerOnlyRes)
             return true
         }
         if (args.size != 1) {
