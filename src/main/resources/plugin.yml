@@ -7,3 +7,5 @@ commands:
     description: Teleports you to another player
   warp:
     description: Warps!
+  coord:
+    description: Format coords.

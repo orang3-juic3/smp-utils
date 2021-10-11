@@ -45,10 +45,7 @@ class TabList : Listener {
         val conn = tabPlayer.handle.connection
         val tps: DoubleArray = MinecraftServer.getServer().recentTps
         val loc: Location = tabPlayer.location
-        val builder = "§a(" +
-                loc.x.fmtCoord() + ", " +
-                loc.y.fmtCoord() + ", " +
-                loc.z.fmtCoord() + ")"
+        val builder = "§a(${loc.fmtCoord()})"
         val text = String.format(
             "{\"text\": \"%s\"}", "§2TPS : " +
                     tps[0].roundToInt() + "\\n" + builder
@@ -74,12 +71,5 @@ class TabList : Listener {
         }
         val pingComp = Component.text(" ${tabPlayer.name} ${ping}ms", colour)
         tabPlayer.playerListName(pingComp)
-    }
-
-    private fun Double.fmtCoord() : Int {
-        if (this < 0) {
-            return ceil(this).toInt()
-        }
-        return floor(this).toInt()
     }
 }
